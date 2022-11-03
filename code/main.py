@@ -14,6 +14,15 @@ from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from func import f_addVideotodb
 from getHelpWidget import Help
+from PyQt5 import QtCore, QtWidgets
+
+
+if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+
+if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
 
 
 class Form(QMainWindow, Ui_MainWindow):
