@@ -1,0 +1,8 @@
+class Form() – позволяет получать видео с камеры, идентифицировать личности людей на видео и получать информацию о них, записывать видео
+(основные методы: video_run(), get_info(), start_recording(), stop_recording(), changeColor(), setDarkTheme(), setLightTheme(), f_addpeople())
+
+class PersonInfoAdd() – класс для добавления информации о человеке
+(основные методы: photo(), done(), changeColor(), setLightTheme(), setDarkTheme())
+ 
+class Help() – помогает получить описание назначения и
+функциональности программы в текстовом файле

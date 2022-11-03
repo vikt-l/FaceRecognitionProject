@@ -13,6 +13,7 @@ from PyQt5.QtGui import QPixmap
 from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from func import f_addVideotodb
+from getHelpWidget import Help
 
 
 class Form(QMainWindow, Ui_MainWindow):
@@ -36,6 +37,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.btnStopRecording.clicked.connect(self.stop_recording)
         self.cBoxNames.activated.connect(self.get_info)
         self.start.clicked.connect(self.video_run)
+        self.btn_help.clicked.connect(self.get_help())
 
 
     def f_addpeople(self):
@@ -199,6 +201,11 @@ class Form(QMainWindow, Ui_MainWindow):
         self.flag_recording = False
         f_addVideotodb(1, self.sp_peoples, self.count_not_known,
                        f'../recording_video/recording_{self.number_recording}.avi')
+
+    def get_help(self):
+        self.window_help = Help()
+        self.window_help.show()
+
 
 
 if __name__ == "__main__":
