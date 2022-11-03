@@ -1,10 +1,14 @@
 from PIL import Image
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap
 
 from person_info_window import Ui_Form
 from func import f_addPersontodb
+
+
+class NotAllInfo(Exception):
+    pass
 
 
 class PersonInfoAdd(QWidget, Ui_Form):
@@ -19,35 +23,53 @@ class PersonInfoAdd(QWidget, Ui_Form):
         self.btn_addPhoto.clicked.connect(self.photo)
         self.bth_addPerson_done.clicked.connect(self.done)
 
+        self.lbl_err = QLabel(self)
+        self.lbl_err.setText('Введите полную информацию')
+        self.lbl_err.hide()
+
         self.fname = None
 
     def photo(self):
-        self.fname = QFileDialog.getOpenFileName(self, '', '')[0]
+        try:
+            self.fname = QFileDialog.getOpenFileName(self, '', '')[0]
 
-        img = Image.open(self.fname)
-        fixed_height = 150
-        percent = fixed_height / float(img.size[0])
-        width_size = int((float(img.size[1]) * float(percent)))
-        img = img.resize((fixed_height, width_size))
-        img.save('../photo/result.jpeg')
+            img = Image.open(self.fname)
+            fixed_height = 150
+            percent = fixed_height / float(img.size[0])
+            width_size = int((float(img.size[1]) * float(percent)))
+            img = img.resize((fixed_height, width_size))
+            img.save('../photo/result.jpeg')
 
-        self.pixmap = QPixmap('../photo/result.jpeg')
-        self.lbl_photo.setPixmap(self.pixmap)
+            self.pixmap = QPixmap('../photo/result.jpeg')
+            self.lbl_photo.setPixmap(self.pixmap)
+        except Exception:
+            pass
 
     def done(self):
-        name = self.lineEdit_name.text()
-        surname = self.lineEdit_surname.text()
-        age = self.spinBoxAge.value()
-        year = self.calendarWidget.selectedDate()
-        year = year.toString('yyyy-MM-dd')
-        info = self.plainTextEditInfo.toPlainText()
-        path_photo = self.fname
+        self.lbl_err.hide()
+        try:
+            name = self.lineEdit_name.text()
+            surname = self.lineEdit_surname.text()
+            age = self.spinBoxAge.value()
+            year = self.calendarWidget.selectedDate()
+            year = year.toString('yyyy-MM-dd')
+            info = self.plainTextEditInfo.toPlainText()
+            path_photo = self.fname
 
-        img = Image.open(path_photo)
-        img.save(f"people/{name}_{surname}")
+            if not all([name, surname, age, year, info, path_photo]):
+                raise NotAllInfo
 
-        f_addPersontodb(name, surname, age, year, info, path_photo)
-        self.close()
+            img = Image.open(path_photo)
+            img.save(f"people/{name}_{surname}")
+
+            f_addPersontodb(name, surname, age, year, info, path_photo)
+            self.close()
+
+        except NotAllInfo:
+            self.lbl_err.show()
+
+        except Exception:
+            self.lbl_err.show()
 
     def changeColor(self):
         if self.theme == 'dark':
