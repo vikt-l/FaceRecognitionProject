@@ -11,7 +11,7 @@ from PyQt5.QtGui import QImage, QPixmap
 class VideoCapture(QWidget):
     def __init__(self):
         super().__init__()
-        self.label = QLabel(self)  # <- So put 'self' in the parenthesis
+        self.label = QLabel(self)
         self.label.setGeometry(0, 0, 640, 480)
         self.work_thread = WorkThread()
         self.thread = threading.Thread(target=self.work_thread.func)
