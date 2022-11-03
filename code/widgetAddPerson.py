@@ -12,6 +12,7 @@ class NotAllInfo(Exception):
 
 
 class PersonInfoAdd(QWidget, Ui_Form):
+    # форма для довабления информации о человеке в базу данных
     def __init__(self, theme):
         super().__init__()
         self.theme = theme
@@ -30,6 +31,8 @@ class PersonInfoAdd(QWidget, Ui_Form):
         self.fname = None
 
     def photo(self):
+        # получение фото, добавление его на форму
+
         try:
             self.fname = QFileDialog.getOpenFileName(self, '', '')[0]
 
@@ -46,6 +49,8 @@ class PersonInfoAdd(QWidget, Ui_Form):
             pass
 
     def done(self):
+        # добавление информации о человеке в бд
+
         self.lbl_err.hide()
         try:
             name = self.lineEdit_name.text()
@@ -72,12 +77,16 @@ class PersonInfoAdd(QWidget, Ui_Form):
             self.lbl_err.show()
 
     def changeColor(self):
+        # меняет тему приложения
+
         if self.theme == 'dark':
             self.setDarkTheme()
         elif self.theme == 'light':
             self.setLightTheme()
 
     def setLightTheme(self):
+        # устанавливает светлую тему
+
         self.setStyleSheet('background-color: #f4f5f6')
         self.plainTextEditInfo.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btn_addPhoto.setStyleSheet('color: #0b1016; background-color: #cacfd5')
@@ -92,6 +101,8 @@ class PersonInfoAdd(QWidget, Ui_Form):
         self.lbl_info.setStyleSheet('color: #0b1016')
 
     def setDarkTheme(self):
+        # устанавливает темную тему
+
         self.setStyleSheet('background-color: #38444c')
         self.plainTextEditInfo.setStyleSheet('color: #f0f2f3; background-color: #697278')
         self.btn_addPhoto.setStyleSheet('color: #f0f2f3; background-color: #697278')

@@ -17,6 +17,8 @@ from getHelpWidget import Help
 
 
 class Form(QMainWindow, Ui_MainWindow):
+    # главная форма
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -39,12 +41,15 @@ class Form(QMainWindow, Ui_MainWindow):
         self.start.clicked.connect(self.video_run)
         self.btn_help.clicked.connect(self.get_help())
 
-
     def f_addpeople(self):
+        # создает форму для довабления информации о человеке в базу данных
+
         self.form_to_add_people = PersonInfoAdd(self.theme)
         self.form_to_add_people.show()
 
     def changeColor(self):
+        # меняет тему приложения
+
         if self.btn_theme.text() == 'тёмная тема':
             self.setDarkTheme()
             self.theme = 'dark'
@@ -53,6 +58,8 @@ class Form(QMainWindow, Ui_MainWindow):
             self.theme = 'light'
 
     def setLightTheme(self):
+        # устанавливает светлую тему
+
         self.setStyleSheet('background-color: #f4f5f6')
         self.btn_theme.setText('тёмная тема')
         self.addPeople.setStyleSheet('color: #0b1016; background-color: #cacfd5')
@@ -69,6 +76,8 @@ class Form(QMainWindow, Ui_MainWindow):
         self.lblNumberPeople.setStyleSheet('color: #0b1016')
 
     def setDarkTheme(self):
+        # устанавливает темную тему
+
         self.setStyleSheet('background-color: #38444c')
         self.btn_theme.setText('светлая тема')
         self.addPeople.setStyleSheet('color: #f0f2f3; background-color: #697278')
@@ -85,6 +94,8 @@ class Form(QMainWindow, Ui_MainWindow):
         self.lblNumberPeople.setStyleSheet('color: #f0f2f3')
 
     def video_run(self):
+        # получение доступа к камере, поиск и идентификация лиц, добавление информации на форму
+
         cap = cv2.VideoCapture('../test_media/video.mp4')
         known_people = os.listdir('../people')
 
@@ -159,6 +170,8 @@ class Form(QMainWindow, Ui_MainWindow):
                 self.video_recording.write(self.img)
 
     def get_info(self):
+        # добавляет на форму информацию о выбранном человеке
+
         n = self.cBoxNames.currentText().split()
         name = n[0]
         surname = n[1]
@@ -185,6 +198,8 @@ class Form(QMainWindow, Ui_MainWindow):
         self.img_photo.setPixmap(photo)
 
     def start_recording(self):
+        # начало записи видео
+
         self.sp_peoples = set()
         self.count_not_known = 0
         self.flag_recording = True
@@ -198,14 +213,17 @@ class Form(QMainWindow, Ui_MainWindow):
                                                20.0, (frame_width, frame_height))
 
     def stop_recording(self):
+        # остановка записи видео и внесение информации в базу данных
+
         self.flag_recording = False
         f_addVideotodb(1, self.sp_peoples, self.count_not_known,
                        f'../recording_video/recording_{self.number_recording}.avi')
 
     def get_help(self):
+        # открывает форму для получения описания программы
+
         self.window_help = Help()
         self.window_help.show()
-
 
 
 if __name__ == "__main__":

@@ -3,6 +3,7 @@ from helpwidget import Ui_Form
 
 
 class Help(QWidget, Ui_Form):
+    # помогает получить описание программы из текстового файла
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -17,5 +18,6 @@ class Help(QWidget, Ui_Form):
         self.btn_closeHelp.clicked.connect(self.close)
 
     def close(self):
+        # закрывает форму
         self.plainTextEditHelp.clear()
         self.close()
