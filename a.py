@@ -1,4 +1,3 @@
-import sys
 import cv2
 import numpy as np
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -36,7 +35,7 @@ class Window(QtWidgets.QWidget):
         self.setGeometry(300, 300, 500, 500)
 
         self.btn = QtWidgets.QPushButton(self)
-        self.btn.clicked.connect(self.can)
+        # self.btn.clicked.connect(self.can)
 
         self.lbl = QtWidgets.QLabel(self)
         self.lbl.resize(500, 500)
@@ -44,10 +43,11 @@ class Window(QtWidgets.QWidget):
 
         # +++
         self.thread = ThreadOpenCV()  # +++
+        self.thread.start()
         self.thread.changePixmap.connect(self.setImage)  # +++
 
-    def can(self):
-        self.thread.start()  # +++
+    # def can(self):
+    #     self.thread.start()  # +++
 
     def setImage(self, image, msg):  # +++
         self.lbl.setPixmap(QPixmap.fromImage(image))  # +++

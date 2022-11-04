@@ -2,6 +2,7 @@ from PIL import Image
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtWidgets import QFileDialog
 from PyQt5.QtGui import QPixmap
+from PyQt5.Qt import *
 
 from person_info_window import Ui_Form
 from func import f_addPersontodb
@@ -37,16 +38,20 @@ class PersonInfoAdd(QWidget, Ui_Form):
             self.fname = QFileDialog.getOpenFileName(self, '', '')[0]
 
             img = Image.open(self.fname)
-            fixed_height = 150
-            percent = fixed_height / float(img.size[0])
-            width_size = int((float(img.size[1]) * float(percent)))
-            img = img.resize((fixed_height, width_size))
-            img.save('../photo/result.jpeg')
+            # fixed_height = 150
+            # percent = fixed_height / float(img.size[0])
+            # width_size = int((float(img.size[1]) * float(percent)))
+            # img = img.resize((fixed_height, width_size))
+            # img.save('../photo/result.jpeg')
 
-            self.pixmap = QPixmap('../photo/result.jpeg')
-            self.lbl_photo.setPixmap(self.pixmap)
-        except Exception:
-            pass
+
+            # data = img.tobytes("raw", "RGB")
+            # convertToQtFormat = QImage(data, img.size[0], img.size[1], QImage.Format_RGB32)
+            # img = convertToQtFormat.scaled(300, 300, Qt.KeepAspectRatio)
+            # self.lbl_photo.setPixmap(QPixmap.fromImage(img))
+
+        except Exception as ex:
+            print(ex)
 
     def done(self):
         # добавление информации о человеке в бд
@@ -65,7 +70,7 @@ class PersonInfoAdd(QWidget, Ui_Form):
                 raise NotAllInfo
 
             img = Image.open(path_photo)
-            img.save(f"people/{name}_{surname}")
+            img.save(f"../people/{name}_{surname}.jpeg")
 
             f_addPersontodb(name, surname, age, year, info, path_photo)
             self.close()

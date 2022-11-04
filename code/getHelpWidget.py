@@ -10,14 +10,7 @@ class Help(QWidget, Ui_Form):
         self.initUI()
 
     def initUI(self):
-        with open('help.txt') as file:
+        with open('help.txt', encoding='utf8') as file:
             file = file.readlines()
             for i in file:
-                self.plainTextEditHelp.setPlainText(i)
-
-        self.btn_closeHelp.clicked.connect(self.close)
-
-    def close(self):
-        # закрывает форму
-        self.plainTextEditHelp.clear()
-        self.close()
+                self.plainTextEditHelp.insertPlainText(i)

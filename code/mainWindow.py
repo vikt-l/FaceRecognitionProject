@@ -23,7 +23,7 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
         self.video = QtWidgets.QLabel(self.frame)
-        self.video.setGeometry(QtCore.QRect(30, 0, 481, 281))
+        self.video.setGeometry(QtCore.QRect(20, 20, 481, 281))
         self.video.setObjectName("video")
         self.namesPeoples = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.namesPeoples.setGeometry(QtCore.QRect(40, 90, 341, 221))

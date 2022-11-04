@@ -18,9 +18,6 @@ class Ui_Form(object):
         self.plainTextEditHelp = QtWidgets.QPlainTextEdit(Form)
         self.plainTextEditHelp.setGeometry(QtCore.QRect(20, 10, 451, 241))
         self.plainTextEditHelp.setObjectName("plainTextEditHelp")
-        self.btn_closeHelp = QtWidgets.QPushButton(Form)
-        self.btn_closeHelp.setGeometry(QtCore.QRect(20, 270, 101, 23))
-        self.btn_closeHelp.setObjectName("btn_closeHelp")
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -28,4 +25,3 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         _translate = QtCore.QCoreApplication.translate
         Form.setWindowTitle(_translate("Form", "Form"))
-        self.btn_closeHelp.setText(_translate("Form", "close"))

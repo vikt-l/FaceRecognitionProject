@@ -9,6 +9,10 @@ def f_addPersontodb(name, surname, age, year, info, path_photo):
     cur.execute(f"""INSERT INTO person(name, surname, age, year, information, photo)
     VALUES('{name}', '{surname}', {age}, DATE('{year}'), '{info}', '{path_photo}')""")
     con.commit()
+
+    res = cur.execute('''select * from person''').fetchall()
+    print(res)
+
     con.close()
 
 

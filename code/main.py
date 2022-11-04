@@ -2,11 +2,10 @@ import sys
 import sqlite3
 from PIL import Image
 
-import face_recognition as fr
+#import face_recognition as fr
 import cv2
-import os
 
-from mainWindow import Ui_MainWindow
+from code.mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from getHelpWidget import Help
 from PyQt5 import QtCore, QtWidgets
@@ -30,21 +29,20 @@ class Form(QMainWindow, Ui_MainWindow):
     def initUI(self):
         self.theme = 'light'
 
-        self.btn_start = QtWidgets.QPushButton(self)
-        self.btn_start.setText('start')
-        self.btn_start.clicked.connect(self.start)
+        # self.btn_start = QtWidgets.QPushButton(self)
+        # self.btn_start.setText('start')
+        # self.btn_start.clicked.connect(self.start)
 
 
         self.addPeople.clicked.connect(self.f_addpeople)
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
+
         self.btn_theme.clicked.connect(self.changeColor)
         self.setLightTheme()
 
         self.cBoxNames.activated.connect(self.get_info)
         self.btn_help.clicked.connect(self.get_help)
 
-        self.thread = ThreadOpenCV()
-        self.thread.changePixmap.connect(self.set_video)
 
     def start(self):
         self.thread.start()
