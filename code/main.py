@@ -30,17 +30,24 @@ class Form(QMainWindow, Ui_MainWindow):
     def initUI(self):
         self.theme = 'light'
 
+        self.btn_start = QtWidgets.QPushButton(self)
+        self.btn_start.setText('start')
+        self.btn_start.clicked.connect(self.start)
+
+
         self.addPeople.clicked.connect(self.f_addpeople)
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
         self.btn_theme.clicked.connect(self.changeColor)
         self.setLightTheme()
 
         self.cBoxNames.activated.connect(self.get_info)
-        self.btn_help.clicked.connect(self.get_help())
+        self.btn_help.clicked.connect(self.get_help)
 
         self.thread1 = ThreadOpenCV()
-        self.thread1.start()
         self.thread1.changePixmap.connect(self.set_video)
+
+    def start(self):
+        self.thread1.start()
 
     def f_addpeople(self):
         # создает форму для довабления информации о человеке в базу данных
@@ -64,7 +71,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.setStyleSheet('background-color: #f4f5f6')
         self.btn_theme.setText('тёмная тема')
         self.addPeople.setStyleSheet('color: #0b1016; background-color: #cacfd5')
-        self.pushButton.setStyleSheet('color: #0b1016; background-color: #cacfd5')
+        self.btn_help.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btn_theme.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btnRecording.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btnStopRecording.setStyleSheet('color: #0b1016; background-color: #cacfd5')
@@ -82,7 +89,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.setStyleSheet('background-color: #38444c')
         self.btn_theme.setText('светлая тема')
         self.addPeople.setStyleSheet('color: #f0f2f3; background-color: #697278')
-        self.pushButton.setStyleSheet('color: #f0f2f3; background-color: #697278')
+        self.btn_help.setStyleSheet('color: #f0f2f3; background-color: #697278')
         self.btn_theme.setStyleSheet('color: #f0f2f3; background-color: #697278')
         self.btnRecording.setStyleSheet('color: #f0f2f3; background-color: #697278')
         self.btnStopRecording.setStyleSheet('color: #f0f2f3; background-color: #697278')
