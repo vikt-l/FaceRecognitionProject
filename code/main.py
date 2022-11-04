@@ -6,13 +6,8 @@ import face_recognition as fr
 import cv2
 import os
 
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.Qt import QDateTime
-from PyQt5.QtGui import QPixmap
-
-from mainWindow import Ui_MainWindow
+from code.mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
-from func import f_addVideotodb
 from getHelpWidget import Help
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.Qt import *
