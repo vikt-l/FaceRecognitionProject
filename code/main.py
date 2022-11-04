@@ -34,22 +34,16 @@ class Form(QMainWindow, Ui_MainWindow):
 
     def initUI(self):
         self.theme = 'light'
-        self.flag_recording = False
-        self.number_recording = 0
-
 
         self.addPeople.clicked.connect(self.f_addpeople)
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
         self.btn_theme.clicked.connect(self.changeColor)
         self.setLightTheme()
 
-        self.btnRecording.clicked.connect(self.start_recording)
-        self.btnStopRecording.clicked.connect(self.stop_recording)
         self.cBoxNames.activated.connect(self.get_info)
-        self.start.clicked.connect(self.video_run)
         self.btn_help.clicked.connect(self.get_help())
 
-        self.thread1 = ThreadOpenCV(self.flag_recording)
+        self.thread1 = ThreadOpenCV()
         self.thread1.start()
         self.thread1.changePixmap.connect(self.set_video)
 
@@ -108,7 +102,6 @@ class Form(QMainWindow, Ui_MainWindow):
     def set_video(self, image, find_faces, peoples, names):
         # добавление видео и информации на форму
 
-        self.lcdNumberPeople.display(0)
         self.namesPeoples.clear()
         self.infoPeople.clear()
         self.img_photo.clear()
@@ -149,7 +142,7 @@ class Form(QMainWindow, Ui_MainWindow):
 
         self.img_photo.setPixmap(photo)
 
-    # def start_recording(self):   ##########################
+    # def start_recording(self):
     #     # начало записи видео
     #
     #     self.sp_peoples = set()
@@ -181,10 +174,11 @@ class Form(QMainWindow, Ui_MainWindow):
 class ThreadOpenCV(QThread):
     changePixmap = pyqtSignal(QImage, int, str, str)
 
-    def __init__(self, flag_recording):
+    def __init__(self):
         super().__init__()
-        self.flag_recording = flag_recording
+        self.flag_recording = False
         self.peoples = []
+        self.number_recording = 0
 
     def video_run(self):
         # получение доступа к камере, поиск и идентификация лиц
