@@ -6,7 +6,7 @@ import face_recognition as fr
 import cv2
 import os
 
-from code.mainWindow import Ui_MainWindow
+from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from getHelpWidget import Help
 from PyQt5 import QtCore, QtWidgets
