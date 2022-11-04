@@ -71,20 +71,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_theme">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>PushButton</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="btnRecording">
        <property name="font">
         <font>
@@ -105,6 +91,20 @@
        </property>
        <property name="text">
         <string>остановить запись</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_theme">
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_help">
+       <property name="text">
+        <string>help</string>
        </property>
       </widget>
      </item>
