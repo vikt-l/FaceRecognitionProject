@@ -1,7 +1,4 @@
 from PIL import Image
-from PyQt5.QtWidgets import QWidget, QLabel
-from PyQt5.QtWidgets import QFileDialog
-from PyQt5.QtGui import QPixmap
 from PyQt5.Qt import *
 
 from person_info_window import Ui_Form
@@ -36,19 +33,8 @@ class PersonInfoAdd(QWidget, Ui_Form):
 
         try:
             self.fname = QFileDialog.getOpenFileName(self, '', '')[0]
-
-            img = Image.open(self.fname)
-            # fixed_height = 150
-            # percent = fixed_height / float(img.size[0])
-            # width_size = int((float(img.size[1]) * float(percent)))
-            # img = img.resize((fixed_height, width_size))
-            # img.save('../photo/result.jpeg')
-
-
-            # data = img.tobytes("raw", "RGB")
-            # convertToQtFormat = QImage(data, img.size[0], img.size[1], QImage.Format_RGB32)
-            # img = convertToQtFormat.scaled(300, 300, Qt.KeepAspectRatio)
-            # self.lbl_photo.setPixmap(QPixmap.fromImage(img))
+            img = QImage(self.fname).scaled(200, 200, Qt.KeepAspectRatio)
+            self.lbl_photo.setPixmap(QPixmap.fromImage(img))
 
         except Exception as ex:
             print(ex)

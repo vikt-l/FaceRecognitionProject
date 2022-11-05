@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>703</width>
-    <height>553</height>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -90,21 +90,21 @@
   <widget class="QLabel" name="lbl_photo">
    <property name="geometry">
     <rect>
-     <x>440</x>
+     <x>460</x>
      <y>20</y>
-     <width>221</width>
-     <height>171</height>
+     <width>191</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="text">
-    <string> </string>
+    <string/>
    </property>
   </widget>
   <widget class="QPushButton" name="btn_addPhoto">
    <property name="geometry">
     <rect>
-     <x>484</x>
-     <y>210</y>
+     <x>450</x>
+     <y>190</y>
      <width>171</width>
      <height>23</height>
     </rect>
