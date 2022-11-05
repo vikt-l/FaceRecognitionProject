@@ -141,27 +141,27 @@ class Form(QMainWindow, Ui_MainWindow):
 
         self.img_photo.setPixmap(photo)
 
-    # def start_recording(self):
-    #     # начало записи видео
-    #
-    #     self.sp_peoples = set()
-    #     self.count_not_known = 0
-    #     self.flag_recording = True
-    #     self.number_recording += 1
-    #     self.dt_rec = self.dateTimeEd.dateTime()
-    #
-    #     frame_width = int(self.cap.get(3))
-    #     frame_height = int(self.cap.get(4))
-    #     fourcc = cv2.VideoWriter_fourcc(*'MPEG')
-    #     self.video_recording = cv2.VideoWriter(f'../recording_video/recording_{self.number_recording}.avi', fourcc,
-    #                                            20.0, (frame_width, frame_height))
-    #
-    # def stop_recording(self):
-    #     # остановка записи видео и внесение информации в базу данных
-    #
-    #     self.flag_recording = False
-    #     f_addVideotodb(1, self.sp_peoples, self.count_not_known,
-    #                    f'../recording_video/recording_{self.number_recording}.avi')
+    def start_recording(self):
+        # начало записи видео
+
+        self.sp_peoples = set()
+        self.count_not_known = 0
+        self.flag_recording = True
+        self.number_recording += 1
+        self.dt_rec = self.dateTimeEd.dateTime()
+
+        frame_width = int(self.cap.get(3))
+        frame_height = int(self.cap.get(4))
+
+        self.video_recording = cv2.VideoWriter(f'../recording_video/recording_{self.number_recording}.avi', fourcc,
+                                               20.0, (frame_width, frame_height))
+
+    def stop_recording(self):
+        # остановка записи видео и внесение информации в базу данных
+
+        self.flag_recording = False
+        f_addVideotodb(1, self.sp_peoples, self.count_not_known,
+                       f'../recording_video/recording_{self.number_recording}.avi')
 
     def get_help(self):
         # открывает форму для получения описания программы

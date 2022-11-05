@@ -1,9 +1,11 @@
 import sys
 import cv2
+import numpy
 
 from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from getHelpWidget import Help
+from func import f_addVideotodb
 
 from PyQt5.Qt import *
 from PyQt5 import QtCore, QtWidgets
@@ -24,10 +26,15 @@ class Form(QMainWindow, Ui_MainWindow):
 
     def initUI(self):
         self.theme = 'light'
+        self.flag_recording = False
+        self.number_recording = 0
+
 
         self.btn_theme.clicked.connect(self.changeColor)
         self.addPeople.clicked.connect(self.f_addpeople)
         self.btn_help.clicked.connect(self.get_help)
+        self.btnRecording.clicked.connect(self.start_recording)
+        self.btnStopRecording.clicked.connect(self.stop_recording)
 
         self.setLightTheme()
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
@@ -35,9 +42,18 @@ class Form(QMainWindow, Ui_MainWindow):
         self.thread = ThreadOpenCV()
         self.thread.start()
         self.thread.changePixmap.connect(self.setVideo)
+        self.thread.changePixmap.connect(self.recording)
 
-    def setVideo(self, img):
+    def setVideo(self, img, names, peoples, count, time):
         self.video.setPixmap(QPixmap.fromImage(img))
+
+        self.names = names
+        self.peoples = peoples
+        self.count = count
+        self.time = time
+
+        for i in names:
+            self.all_peoples.add(i)
 
     def changeColor(self):
         # меняет тему приложения
@@ -97,9 +113,36 @@ class Form(QMainWindow, Ui_MainWindow):
         self.form_to_add_people = PersonInfoAdd(self.theme)
         self.form_to_add_people.show()
 
+    def start_recording(self):
+        self.dt_rec = self.dateTimeEd.dateTime()
+        self.all_peoples = set()
+        self.count_not_known = 0
+        self.flag_recording = True
+        self.number_recording += 1
+
+        frame_width = 700
+        frame_height = 700
+        fourcc = cv2.VideoWriter_fourcc(*'MPEG')
+        self.video_record = cv2.VideoWriter(f'../recording_video/recording_{self.number_recording}.avi', fourcc,
+                                       20.0, (frame_width, frame_height))
+
+    def recording(self, *args):
+        if self.flag_recording:
+            args = list(args)
+            self.video_record.write(args[-1])
+
+    def stop_recording(self):
+        if self.flag_recording:
+            self.flag_recording = False
+
+            f_addVideotodb(self.dt_rec, self.all_peoples,
+                           f'../recording_video/recording_{self.number_recording}.avi')
+        else:
+            pass
+
 
 class ThreadOpenCV(QThread):
-    changePixmap = pyqtSignal(QImage)
+    changePixmap = pyqtSignal(QImage, list, str, int, str, numpy.ndarray)
 
     def __init__(self):
         super().__init__()
@@ -116,7 +159,7 @@ class ThreadOpenCV(QThread):
                 convertToQtFormat = QImage(
                     rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
                 p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                self.changePixmap.emit(p)
+                self.changePixmap.emit(p, [], '', 0, '', frame)
 
 
             self.msleep(20)

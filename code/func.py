@@ -10,21 +10,19 @@ def f_addPersontodb(name, surname, age, year, info, path_photo):
     VALUES('{name}', '{surname}', {age}, DATE('{year}'), '{info}', '{path_photo}')""")
     con.commit()
 
-    res = cur.execute('''select * from person''').fetchall()
+    res = cur.execute('''select * from person''').fetchall()  # >>>>>>>>>>>>>>>>>>>>>>>>>>>
     print(res)
 
     con.close()
 
 
-def f_addVideotodb(datetime, peoples, not_known, video_path):
+def f_addVideotodb(datetime, peoples, video_path):
     # функция добавляет записанное видео и информацию о нем в базу данных (таблица videos)
 
     date = datetime.toString('yyyy-MM-dd')
     time = datetime.toString('hh:mm:ss')
 
     a = list(peoples)
-    if not not_known:
-        a.append(f'неизвестные: {not_known}')
     people = ', '.join(a)
 
     con = sqlite3.connect('../person_db.sqlite')
@@ -32,4 +30,8 @@ def f_addVideotodb(datetime, peoples, not_known, video_path):
     cur.execute(f"""INSERT INTO videos(data, time, people, video)
         VALUES(DATE('{date}'), TIME('{time}'), '{people}', '{video_path}')""")
     con.commit()
+
+    res = cur.execute('''select * from videos''').fetchall() # >>>>>>>>>>>>>>>>>>>>>
+    print(res)
+
     con.close()
