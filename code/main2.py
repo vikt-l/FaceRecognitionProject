@@ -9,7 +9,7 @@ from getHelpWidget import Help
 from func import f_addVideotodb
 
 from PyQt5.Qt import *
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtMultimedia
 from PyQt5.QtCore import Qt
 
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
@@ -37,6 +37,12 @@ class Form(QMainWindow, Ui_MainWindow):
         self.btnRecording.clicked.connect(self.start_recording)
         self.btnStopRecording.clicked.connect(self.stop_recording)
 
+        self.addPeople.clicked.connect(self.load_mp3)
+        self.btnRecording.clicked.connect(self.load_mp3)
+        self.btnStopRecording.clicked.connect(self.load_mp3)
+        self.btn_theme.clicked.connect(self.load_mp3)
+        self.btn_help.clicked.connect(self.load_mp3)
+
         self.setLightTheme()
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
         self.cBoxNames.activated.connect(self.get_info)
@@ -63,7 +69,6 @@ class Form(QMainWindow, Ui_MainWindow):
         self.lcdNumberPeople.display(count)
         self.namesPeoples.setPlainText(peoples)
         self.cBoxNames.addItems(names)
-
 
     def changeColor(self):
         # меняет тему приложения
@@ -177,7 +182,6 @@ class Form(QMainWindow, Ui_MainWindow):
         cur = con.cursor()
         res = cur.execute(f"""select * from person
         where name like '{name}' and surname like '{surname}'""").fetchall()
-        print(res)
         con.close()
 
         age, year, information, photoPath = tuple(list(res[0])[3:])
@@ -186,6 +190,12 @@ class Form(QMainWindow, Ui_MainWindow):
         img = QImage(photoPath).scaled(200, 200, Qt.KeepAspectRatio)
         self.img_photo.setPixmap(QPixmap.fromImage(img))
 
+    def load_mp3(self):
+        media = QtCore.QUrl.fromLocalFile('../Sound_17216.mp3')
+        content = QtMultimedia.QMediaContent(media)
+        self.player = QtMultimedia.QMediaPlayer()
+        self.player.setMedia(content)
+        self.player.play()
 
 
 class ThreadOpenCV(QThread):
@@ -206,7 +216,8 @@ class ThreadOpenCV(QThread):
                 convertToQtFormat = QImage(
                     rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
                 p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                self.changePixmap.emit(p, ['анастасия плотникова', 'виктория лесных'], 'анастасия плотникова\nвиктория лесных', 2, '2022-11-05-15-02-14', frame)
+                self.changePixmap.emit(p, ['анастасия плотникова', 'виктория лесных'],
+                                       'анастасия плотникова\nвиктория лесных', 2, '2022-11-05-15-02-14', frame)
 
             self.msleep(20)
         cap.realease()

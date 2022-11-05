@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1051, 772)
+        MainWindow.resize(964, 646)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.frame = QtWidgets.QFrame(self.centralwidget)
@@ -81,11 +81,11 @@ class Ui_MainWindow(object):
         self.cBoxNames.setGeometry(QtCore.QRect(40, 330, 251, 20))
         self.cBoxNames.setObjectName("cBoxNames")
         self.img_photo = QtWidgets.QLabel(self.centralwidget)
-        self.img_photo.setGeometry(QtCore.QRect(40, 370, 141, 181))
+        self.img_photo.setGeometry(QtCore.QRect(40, 380, 141, 181))
         self.img_photo.setObjectName("img_photo")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1051, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 964, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
