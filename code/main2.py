@@ -9,6 +9,7 @@ from func import f_addVideotodb
 
 from PyQt5.Qt import *
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
@@ -28,7 +29,6 @@ class Form(QMainWindow, Ui_MainWindow):
         self.theme = 'light'
         self.flag_recording = False
         self.number_recording = 0
-
 
         self.btn_theme.clicked.connect(self.changeColor)
         self.addPeople.clicked.connect(self.f_addpeople)
@@ -124,7 +124,7 @@ class Form(QMainWindow, Ui_MainWindow):
         frame_height = 700
         fourcc = cv2.VideoWriter_fourcc(*'MPEG')
         self.video_record = cv2.VideoWriter(f'../recording_video/recording_{self.number_recording}.avi', fourcc,
-                                       20.0, (frame_width, frame_height))
+                                            20.0, (frame_width, frame_height))
 
     def recording(self, *args):
         if self.flag_recording:
@@ -139,6 +139,22 @@ class Form(QMainWindow, Ui_MainWindow):
                            f'../recording_video/recording_{self.number_recording}.avi')
         else:
             pass
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Q:
+            self.f_addpeople()
+
+        elif event.key() == Qt.Key_W:
+            self.start_recording()
+
+        elif event.key() == Qt.Key_E:
+            self.stop_recording()
+
+        elif event.key() == Qt.Key_R:
+            self.get_help()
+
+        elif event.key() == Qt.Key_T:
+            self.changeColor()
 
 
 class ThreadOpenCV(QThread):
@@ -161,8 +177,9 @@ class ThreadOpenCV(QThread):
                 p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
                 self.changePixmap.emit(p, [], '', 0, '', frame)
 
-
             self.msleep(20)
+        cap.realease()
+        cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":
