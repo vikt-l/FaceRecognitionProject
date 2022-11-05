@@ -1,6 +1,7 @@
 import sys
 import cv2
 import numpy
+import sqlite3
 
 from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
@@ -38,6 +39,7 @@ class Form(QMainWindow, Ui_MainWindow):
 
         self.setLightTheme()
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
+        self.cBoxNames.activated.connect(self.get_info)
 
         self.thread = ThreadOpenCV()
         self.thread.start()
@@ -52,8 +54,16 @@ class Form(QMainWindow, Ui_MainWindow):
         self.count = count
         self.time = time
 
-        for i in names:
-            self.all_peoples.add(i)
+        self.cBoxNames.clear()
+
+        if self.flag_recording:
+            for i in names:
+                self.all_peoples.add(i)
+
+        self.lcdNumberPeople.display(count)
+        self.namesPeoples.setPlainText(peoples)
+        self.cBoxNames.addItems(names)
+
 
     def changeColor(self):
         # меняет тему приложения
@@ -79,7 +89,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.namesPeoples.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.infoPeople.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.dateTimeEd.setStyleSheet('color: #0b1016; background-color: #cacfd5')
-        self.lcdNumberPeople.setStyleSheet('background-color: #cacfd5')
+        self.lcdNumberPeople.setStyleSheet('background-color: #697278')
         self.lbl_date.setStyleSheet('color: #0b1016')
         self.lblNumberPeople.setStyleSheet('color: #0b1016')
 
@@ -156,6 +166,27 @@ class Form(QMainWindow, Ui_MainWindow):
         elif event.key() == Qt.Key_T:
             self.changeColor()
 
+    def get_info(self):
+        # добавляет на форму информацию о выбранном человеке
+
+        n = self.cBoxNames.currentText().split()
+        name = n[0]
+        surname = n[1]
+
+        con = sqlite3.connect('../person_db.sqlite')
+        cur = con.cursor()
+        res = cur.execute(f"""select * from person
+        where name like '{name}' and surname like '{surname}'""").fetchall()
+        print(res)
+        con.close()
+
+        age, year, information, photoPath = tuple(list(res[0])[3:])
+        self.infoPeople.setPlainText(f'{name} {surname}\nвозраст: {age}, дата рождения: {year}\n{information}')
+
+        img = QImage(photoPath).scaled(200, 200, Qt.KeepAspectRatio)
+        self.img_photo.setPixmap(QPixmap.fromImage(img))
+
+
 
 class ThreadOpenCV(QThread):
     changePixmap = pyqtSignal(QImage, list, str, int, str, numpy.ndarray)
@@ -175,7 +206,7 @@ class ThreadOpenCV(QThread):
                 convertToQtFormat = QImage(
                     rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
                 p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                self.changePixmap.emit(p, [], '', 0, '', frame)
+                self.changePixmap.emit(p, ['анастасия плотникова', 'виктория лесных'], 'анастасия плотникова\nвиктория лесных', 2, '2022-11-05-15-02-14', frame)
 
             self.msleep(20)
         cap.realease()
