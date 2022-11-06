@@ -10,7 +10,9 @@ class NotAllInfo(Exception):
 
 
 class PersonInfoAdd(QWidget, Ui_Form):
-    # форма для довабления информации о человеке в базу данных
+
+    # форма для добавления информации о человеке в базу данных
+
     def __init__(self, theme):
         super().__init__()
         self.theme = theme
@@ -68,6 +70,7 @@ class PersonInfoAdd(QWidget, Ui_Form):
             self.lbl_err.show()
 
     def changeColor(self):
+
         # меняет тему приложения
 
         if self.theme == 'dark':
@@ -76,6 +79,7 @@ class PersonInfoAdd(QWidget, Ui_Form):
             self.setLightTheme()
 
     def setLightTheme(self):
+
         # устанавливает светлую тему
 
         self.setStyleSheet('background-color: #f4f5f6')
@@ -92,6 +96,7 @@ class PersonInfoAdd(QWidget, Ui_Form):
         self.lbl_info.setStyleSheet('color: #0b1016')
 
     def setDarkTheme(self):
+
         # устанавливает темную тему
 
         self.setStyleSheet('background-color: #38444c')

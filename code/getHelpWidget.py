@@ -3,7 +3,9 @@ from helpwidget import Ui_Form
 
 
 class Help(QWidget, Ui_Form):
-    # помогает получить описание программы из текстового файла
+
+    # класс помогает получить описание программы из текстового файла
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)

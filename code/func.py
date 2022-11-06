@@ -2,6 +2,7 @@ import sqlite3
 
 
 def f_addPersontodb(name, surname, age, year, info, path_photo):
+
     # функция добаляет информацию о человеке в базу данных (таблица person)
 
     con = sqlite3.connect('../person_db.sqlite')
@@ -13,6 +14,7 @@ def f_addPersontodb(name, surname, age, year, info, path_photo):
 
 
 def f_addVideotodb(datetime, peoples, video_path):
+
     # функция добавляет записанное видео и информацию о нем в базу данных (таблица videos)
 
     date = datetime.toString('yyyy-MM-dd')

@@ -24,6 +24,8 @@ if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
 
 class Form(QMainWindow, Ui_MainWindow):
 
+    # главная форма
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -56,6 +58,9 @@ class Form(QMainWindow, Ui_MainWindow):
         self.thread.changePixmap.connect(self.recording)
 
     def setVideo(self, img, names, peoples, count):
+
+        # добавить на форму видео и информацию о нем
+
         self.video.setPixmap(QPixmap.fromImage(img))
 
         self.names = names
@@ -131,6 +136,9 @@ class Form(QMainWindow, Ui_MainWindow):
         self.form_to_add_people.show()
 
     def start_recording(self):
+
+        # начало записи видео
+
         self.dt_rec = self.dateTimeEd.dateTime()
         self.all_peoples = set()
         self.count_not_known = 0
@@ -144,11 +152,17 @@ class Form(QMainWindow, Ui_MainWindow):
                                             20.0, (frame_width, frame_height))
 
     def recording(self, *args):
+
+        # запись видео
+
         if self.flag_recording:
             args = list(args)
             self.video_record.write(args[-1])
 
     def stop_recording(self):
+
+        # окончание записи видео
+
         if self.flag_recording:
             self.flag_recording = False
 
@@ -158,6 +172,9 @@ class Form(QMainWindow, Ui_MainWindow):
             pass
 
     def keyPressEvent(self, event):
+
+        # обработка нажатий клавиатуры
+
         if event.key() == Qt.Key_Q:
             self.f_addpeople()
 
@@ -193,6 +210,9 @@ class Form(QMainWindow, Ui_MainWindow):
         self.img_photo.setPixmap(QPixmap.fromImage(img))
 
     def load_mp3(self):
+
+        # воспроизводит звук при нажатии кнопок
+
         media = QtCore.QUrl.fromLocalFile('../Sound_17216.mp3')
         content = QtMultimedia.QMediaContent(media)
         self.player = QtMultimedia.QMediaPlayer()
@@ -201,12 +221,18 @@ class Form(QMainWindow, Ui_MainWindow):
 
 
 class ThreadOpenCV(QThread):
+
+    # класс для обработки видео и передачи инфорации на главную форму
+
     changePixmap = pyqtSignal(QImage, list, str, int, numpy.ndarray)
 
     def __init__(self):
         super().__init__()
 
     def run(self):
+
+        # обработка видео
+
         cap = cv2.VideoCapture(0)
         known_people = os.listdir('../people')
 
