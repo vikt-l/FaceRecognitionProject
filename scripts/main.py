@@ -42,20 +42,31 @@ class Form(QMainWindow, Ui_MainWindow):
         self.btnRecording.clicked.connect(self.start_recording)
         self.btnStopRecording.clicked.connect(self.stop_recording)
 
+        self.btnStartVideo.clicked.connect(self.startVideo)
+        self.btnStopVideo.clicked.connect(self.stopVideo)
+
         self.addPeople.clicked.connect(self.load_mp3)
         self.btnRecording.clicked.connect(self.load_mp3)
         self.btnStopRecording.clicked.connect(self.load_mp3)
         self.btn_theme.clicked.connect(self.load_mp3)
         self.btn_help.clicked.connect(self.load_mp3)
 
+        self.btnStartVideo.clicked.connect(self.load_mp3)
+        self.btnStopVideo.clicked.connect(self.load_mp3)
+
         self.setLightTheme()
         self.dateTimeEd.setDateTime(QDateTime.currentDateTime())
         self.cBoxNames.activated.connect(self.get_info)
 
         self.thread = ThreadOpenCV()
-        self.thread.start()
         self.thread.changePixmap.connect(self.setVideo)
         self.thread.changePixmap.connect(self.recording)
+
+    def startVideo(self):
+        self.thread.start()
+
+    def stopVideo(self):
+        pass
 
     def setVideo(self, img, names, peoples, count):
 

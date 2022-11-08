@@ -151,9 +151,9 @@
    <widget class="QDateTimeEdit" name="dateTimeEd">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>740</x>
       <y>370</y>
-      <width>121</width>
+      <width>151</width>
       <height>22</height>
      </rect>
     </property>
@@ -161,7 +161,7 @@
    <widget class="QLabel" name="lbl_date">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>640</x>
       <y>370</y>
       <width>91</width>
       <height>16</height>
@@ -199,6 +199,32 @@
      <string>TextLabel</string>
     </property>
    </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>400</y>
+      <width>121</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="btnStartVideo">
+       <property name="text">
+        <string>start</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnStopVideo">
+       <property name="text">
+        <string>stop</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -206,7 +232,7 @@
      <x>0</x>
      <y>0</y>
      <width>964</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
   </widget>
