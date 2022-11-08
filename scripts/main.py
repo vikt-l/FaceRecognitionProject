@@ -219,7 +219,7 @@ class Form(QMainWindow, Ui_MainWindow):
 
         # воспроизводит звук при нажатии кнопок
 
-        media = QtCore.QUrl.fromLocalFile('../Sound_17216.mp3')
+        media = QtCore.QUrl.fromLocalFile('../clickSound.mp3')
         content = QtMultimedia.QMediaContent(media)
         self.player = QtMultimedia.QMediaPlayer()
         self.player.setMedia(content)
@@ -234,6 +234,7 @@ class ThreadOpenCV(QThread):
 
     def __init__(self):
         super().__init__()
+        self.k_frame = 0
 
     def run(self):
 
@@ -246,53 +247,58 @@ class ThreadOpenCV(QThread):
             try:
                 success, frame = cap.read()
                 if success:
-                    cv2.imwrite('../photo/image.jpeg', frame)
-                    img_fr = fr.load_image_file('../photo/image.jpeg')
-                    faces_loc = fr.face_locations(img_fr)
-                    find_faces = len(faces_loc)
-                    names = []
-                    peoples = ''
+                    self.k_frame += 1
+                    if self.k_frame == 1:
+                        cv2.imwrite('../photo/image.jpeg', frame)
+                        img_fr = fr.load_image_file('../photo/image.jpeg')
+                        faces_loc = fr.face_locations(img_fr)
+                        find_faces = len(faces_loc)
+                        names = []
+                        peoples = ''
 
-                    for i in range(find_faces):
-                        y, x1, y1, x = faces_loc[i]
-                        cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
-                        cv2.rectangle(frame, (x, y), (x1, y1), (250, 250, 0), 2)
+                        for i in range(find_faces):
+                            y, x1, y1, x = faces_loc[i]
+                            cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
+                            cv2.rectangle(frame, (x, y), (x1, y1), (250, 250, 0), 2)
 
-                        for i_face in known_people:
-                            known_face = fr.load_image_file(f'../people/{i_face}')
-                            known_face_enc = fr.face_encodings(known_face)[0]
+                            for i_face in known_people:
+                                known_face = fr.load_image_file(f'../people/{i_face}')
+                                known_face_enc = fr.face_encodings(known_face)[0]
 
-                            unknown_face = fr.load_image_file('../photo/image_face.jpeg')
-                            unknown_face_enc = fr.face_encodings(unknown_face)[0]
+                                unknown_face = fr.load_image_file('../photo/image_face.jpeg')
+                                unknown_face_enc = fr.face_encodings(unknown_face)[0]
 
-                            result = fr.compare_faces([known_face_enc], unknown_face_enc)
+                                result = fr.compare_faces([known_face_enc], unknown_face_enc)
 
-                            if result:
-                                name = i_face[:i_face.find('.')].split('_')[0]
-                                surname = i_face[:i_face.find('.')].split('_')[1]
-                                cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                                            (200, 200, 200), 2,
-                                            cv2.LINE_AA)
-                                names.append(f"{name} {surname}")
+                                if result:
+                                    name = i_face[:i_face.find('.')].split('_')[0]
+                                    surname = i_face[:i_face.find('.')].split('_')[1]
+                                    cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                                (200, 200, 200), 2,
+                                                cv2.LINE_AA)
+                                    names.append(f"{name} {surname}")
 
-                            if not result:
-                                cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 200), 1,
-                                            cv2.LINE_AA)
+                                if not result:
+                                    cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 200), 1,
+                                                cv2.LINE_AA)
 
-                        peoples = '\n'.join(names)
-                        if len(names) < find_faces:
-                            peoples += f'неизвестные: {find_faces - len(names)}'
+                            peoples = '\n'.join(names)
+                            if len(names) < find_faces:
+                                peoples += f'неизвестные: {find_faces - len(names)}'
 
-                    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                    h, w, ch = rgbImage.shape
-                    bytesPerLine = ch * w
-                    convertToQtFormat = QImage(
-                        rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                    p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                    self.changePixmap.emit(p, names, peoples, find_faces, frame)
+                        rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                        h, w, ch = rgbImage.shape
+                        bytesPerLine = ch * w
+                        convertToQtFormat = QImage(
+                            rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                        p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
+                        self.changePixmap.emit(p, names, peoples, find_faces, frame)
 
-            except Exception as ex:
-                print(ex)
+                    elif self.k_frame == 4:
+                        self.k_frame = 0
+
+            except Exception:
+                pass
 
         cap.realease()
         cv2.destroyAllWindows()
