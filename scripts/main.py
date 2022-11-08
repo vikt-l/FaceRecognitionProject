@@ -9,7 +9,7 @@ import face_recognition as fr
 from mainWindow import Ui_MainWindow
 from widgetAddPerson import PersonInfoAdd
 from getHelpWidget import Help
-from func import f_addVideotodb
+from funcAddTodb import f_addVideotodb
 
 from PyQt5.Qt import *
 from PyQt5 import QtCore, QtWidgets, QtMultimedia
@@ -78,6 +78,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.cBoxNames.addItems(names)
 
     def changeColor(self):
+
         # меняет тему приложения
 
         if self.btn_theme.text() == 'тёмная тема':
@@ -88,6 +89,7 @@ class Form(QMainWindow, Ui_MainWindow):
             self.theme = 'light'
 
     def setLightTheme(self):
+
         # устанавливает светлую тему
 
         self.setStyleSheet('background-color: #f4f5f6')
@@ -106,6 +108,7 @@ class Form(QMainWindow, Ui_MainWindow):
         self.lblNumberPeople.setStyleSheet('color: #0b1016')
 
     def setDarkTheme(self):
+
         # устанавливает темную тему
 
         self.setStyleSheet('background-color: #38444c')
@@ -124,12 +127,14 @@ class Form(QMainWindow, Ui_MainWindow):
         self.lblNumberPeople.setStyleSheet('color: #f0f2f3')
 
     def get_help(self):
+
         # открывает форму для получения описания программы
 
         self.window_help = Help()
         self.window_help.show()
 
     def f_addpeople(self):
+
         # создает форму для довабления информации о человеке в базу данных
 
         self.form_to_add_people = PersonInfoAdd(self.theme)
@@ -191,6 +196,7 @@ class Form(QMainWindow, Ui_MainWindow):
             self.changeColor()
 
     def get_info(self):
+
         # добавляет на форму информацию о выбранном человеке
 
         n = self.cBoxNames.currentText().split()
@@ -237,55 +243,57 @@ class ThreadOpenCV(QThread):
         known_people = os.listdir('../people')
 
         while True:
-            success, frame = cap.read()
-            if success:
+            try:
+                success, frame = cap.read()
+                if success:
+                    cv2.imwrite('../photo/image.jpeg', frame)
+                    img_fr = fr.load_image_file('../photo/image.jpeg')
+                    faces_loc = fr.face_locations(img_fr)
+                    find_faces = len(faces_loc)
+                    names = []
+                    peoples = ''
 
-                cv2.imwrite('../photo/image.jpeg', frame)
-                img_fr = fr.load_image_file('../photo/image.jpeg')
-                faces_loc = fr.face_locations(img_fr)
-                find_faces = len(faces_loc)
-                names = []
-                peoples = ''
+                    for i in range(find_faces):
+                        y, x1, y1, x = faces_loc[i]
+                        cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
+                        cv2.rectangle(frame, (x, y), (x1, y1), (250, 250, 0), 2)
 
-                for i in range(find_faces):
-                    y, x1, y1, x = faces_loc[i]
-                    cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
-                    cv2.rectangle(frame, (x, y), (x1, y1), (250, 250, 0), 2)
+                        for i_face in known_people:
+                            known_face = fr.load_image_file(f'../people/{i_face}')
+                            known_face_enc = fr.face_encodings(known_face)[0]
 
-                    for i_face in known_people:
-                        known_face = fr.load_image_file(f'../people/{i_face}')
-                        known_face_enc = fr.face_encodings(known_face)[0]
+                            unknown_face = fr.load_image_file('../photo/image_face.jpeg')
+                            unknown_face_enc = fr.face_encodings(unknown_face)[0]
 
-                        unknown_face = fr.load_image_file('../photo/image_face.jpeg')
-                        unknown_face_enc = fr.face_encodings(unknown_face)[0]
+                            result = fr.compare_faces([known_face_enc], unknown_face_enc)
 
-                        result = fr.compare_faces([known_face_enc], unknown_face_enc)
+                            if result:
+                                name = i_face[:i_face.find('.')].split('_')[0]
+                                surname = i_face[:i_face.find('.')].split('_')[1]
+                                cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                            (200, 200, 200), 2,
+                                            cv2.LINE_AA)
+                                names.append(f"{name} {surname}")
 
-                        if result:
-                            name = i_face[:i_face.find('.')].split('_')[0]
-                            surname = i_face[:i_face.find('.')].split('_')[1]
-                            cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                                        (20, 20, 0), 2,
-                                        cv2.LINE_AA)
-                            names.append(f"{name} {surname}")
+                            if not result:
+                                cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 200), 1,
+                                            cv2.LINE_AA)
 
-                        if not result:
-                            cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 0), 1,
-                                        cv2.LINE_AA)
+                        peoples = '\n'.join(names)
+                        if len(names) < find_faces:
+                            peoples += f'неизвестные: {find_faces - len(names)}'
 
-                    peoples = '\n'.join(names)
-                    if len(names) < find_faces:
-                        peoples += f'неизвестные: {find_faces - len(names)}'
+                    rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                    h, w, ch = rgbImage.shape
+                    bytesPerLine = ch * w
+                    convertToQtFormat = QImage(
+                        rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                    p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
+                    self.changePixmap.emit(p, names, peoples, find_faces, frame)
 
-                rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                h, w, ch = rgbImage.shape
-                bytesPerLine = ch * w
-                convertToQtFormat = QImage(
-                    rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                self.changePixmap.emit(p, names, peoples, find_faces, frame)
+            except Exception as ex:
+                print(ex)
 
-            self.msleep(20)
         cap.realease()
         cv2.destroyAllWindows()
 

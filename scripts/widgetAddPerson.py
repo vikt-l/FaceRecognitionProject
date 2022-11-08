@@ -2,7 +2,7 @@ from PIL import Image
 from PyQt5.Qt import *
 
 from person_info_window import Ui_Form
-from func import f_addPersontodb
+from funcAddTodb import f_addPersontodb
 
 
 class NotAllInfo(Exception):
