@@ -12,6 +12,8 @@ class Help(QWidget, Ui_Form):
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle('Help')
+
         with open('help.txt', encoding='utf8') as file:
             file = file.readlines()
             for i in file:

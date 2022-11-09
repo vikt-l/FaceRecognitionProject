@@ -21,6 +21,8 @@ class PersonInfoAdd(QWidget, Ui_Form):
         self.changeColor()
 
     def initUI(self):
+        self.setWindowTitle('AddPerson')
+
         self.btn_addPhoto.clicked.connect(self.photo)
         self.bth_addPerson_done.clicked.connect(self.done)
 

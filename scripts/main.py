@@ -15,6 +15,8 @@ from PyQt5.Qt import *
 from PyQt5 import QtCore, QtWidgets, QtMultimedia
 from PyQt5.QtCore import Qt
 
+# Для экранов с высоким расширением
+
 if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
 
@@ -32,9 +34,11 @@ class Form(QMainWindow, Ui_MainWindow):
         self.initUI()
 
     def initUI(self):
+        self.setWindowTitle('MainForm')
         self.theme = 'light'
         self.flag_recording = False
         self.number_recording = 0
+        self.video.setText('')
 
         self.btn_theme.clicked.connect(self.changeColor)
         self.addPeople.clicked.connect(self.f_addpeople)
@@ -59,34 +63,54 @@ class Form(QMainWindow, Ui_MainWindow):
         self.cBoxNames.activated.connect(self.get_info)
 
         self.thread = ThreadOpenCV()
+        self.thread.start()
+
         self.thread.changePixmap.connect(self.setVideo)
         self.thread.changePixmap.connect(self.recording)
 
     def startVideo(self):
-        self.thread.start()
+
+        # запуск видео с камеры
+
+        self.thread.isRun = True
 
     def stopVideo(self):
-        pass
+
+        # остановка воспроизведения видео
+
+        self.thread.isRun = False
+
+        if self.flag_recording:
+            self.stop_recording()
+
+        self.video.clear()
+        self.lcdNumberPeople.display(0)
+        self.namesPeoples.clear()
+        self.cBoxNames.clear()
+        self.img_photo.clear()
+        self.infoPeople.clear()
 
     def setVideo(self, img, names, peoples, count):
 
         # добавить на форму видео и информацию о нем
 
-        self.video.setPixmap(QPixmap.fromImage(img))
+        if self.thread.isRun:
 
-        self.names = names
-        self.peoples = peoples
-        self.count = count
+            self.video.setPixmap(QPixmap.fromImage(img))
 
-        self.cBoxNames.clear()
+            self.names = names
+            self.peoples = peoples
+            self.count = count
 
-        if self.flag_recording:
-            for i in names:
-                self.all_peoples.add(i)
+            self.cBoxNames.clear()
 
-        self.lcdNumberPeople.display(count)
-        self.namesPeoples.setPlainText(peoples)
-        self.cBoxNames.addItems(names)
+            if self.flag_recording:
+                for i in names:
+                    self.all_peoples.add(i)
+
+            self.lcdNumberPeople.display(count)
+            self.namesPeoples.setPlainText(peoples)
+            self.cBoxNames.addItems(names)
 
     def changeColor(self):
 
@@ -105,6 +129,8 @@ class Form(QMainWindow, Ui_MainWindow):
 
         self.setStyleSheet('background-color: #f4f5f6')
         self.btn_theme.setText('тёмная тема')
+        self.btnStartVideo.setStyleSheet('color: #0b1016; background-color: #cacfd5')
+        self.btnStopVideo.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.addPeople.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btn_help.setStyleSheet('color: #0b1016; background-color: #cacfd5')
         self.btn_theme.setStyleSheet('color: #0b1016; background-color: #cacfd5')
@@ -134,6 +160,8 @@ class Form(QMainWindow, Ui_MainWindow):
         self.infoPeople.setStyleSheet('color: #f0f2f3; background-color: #697278')
         self.dateTimeEd.setStyleSheet('color: #f0f2f3; background-color: #293238')
         self.lcdNumberPeople.setStyleSheet('background-color: #293238')
+        self.btnStopVideo.setStyleSheet('color: #f0f2f3')
+        self.btnStartVideo.setStyleSheet('color: #f0f2f3')
         self.lbl_date.setStyleSheet('color: #f0f2f3')
         self.lblNumberPeople.setStyleSheet('color: #f0f2f3')
 
@@ -238,13 +266,13 @@ class Form(QMainWindow, Ui_MainWindow):
 
 
 class ThreadOpenCV(QThread):
-
     # класс для обработки видео и передачи инфорации на главную форму
 
     changePixmap = pyqtSignal(QImage, list, str, int, numpy.ndarray)
 
     def __init__(self):
         super().__init__()
+        self.isRun = False
         self.k_frame = 0
 
     def run(self):
@@ -257,59 +285,71 @@ class ThreadOpenCV(QThread):
         while True:
             try:
                 success, frame = cap.read()
-                if success:
-                    self.k_frame += 1
-                    if self.k_frame == 1:
-                        cv2.imwrite('../photo/image.jpeg', frame)
-                        img_fr = fr.load_image_file('../photo/image.jpeg')
-                        faces_loc = fr.face_locations(img_fr)
-                        find_faces = len(faces_loc)
-                        names = []
-                        peoples = ''
+                if self.isRun:
 
-                        for i in range(find_faces):
-                            y, x1, y1, x = faces_loc[i]
-                            cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
-                            cv2.rectangle(frame, (x, y), (x1, y1), (250, 250, 0), 2)
+                    if success:
+                        self.k_frame += 1
+                        if self.k_frame == 1:
+                            cv2.imwrite('../photo/image.jpeg', frame)
+                            img_fr = fr.load_image_file('../photo/image.jpeg')
+                            faces_loc = fr.face_locations(img_fr)
+                            find_faces = len(faces_loc)
+                            names = []
+                            peoples = ''
 
-                            for i_face in known_people:
-                                known_face = fr.load_image_file(f'../people/{i_face}')
-                                known_face_enc = fr.face_encodings(known_face)[0]
+                            for i in range(find_faces):
+                                y, x1, y1, x = faces_loc[i]
+                                cv2.imwrite('../photo/image_face.jpeg', frame[y:y1, x:x1])
+                                cv2.rectangle(frame, (x, y), (x1, y1), (100, 100, 0), 2)
 
-                                unknown_face = fr.load_image_file('../photo/image_face.jpeg')
-                                unknown_face_enc = fr.face_encodings(unknown_face)[0]
+                                result = False
 
-                                result = fr.compare_faces([known_face_enc], unknown_face_enc)
+                                for i_face in known_people:
+                                    known_face = fr.load_image_file(f'../people/{i_face}')
+                                    try:
+                                        known_face_enc = fr.face_encodings(known_face)[0]
+                                    except Exception:
+                                        self.changePixmap.emit(p, names, peoples, find_faces, frame)
 
-                                if result:
-                                    name = i_face[:i_face.find('.')].split('_')[0]
-                                    surname = i_face[:i_face.find('.')].split('_')[1]
-                                    cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
-                                                (200, 200, 200), 2,
-                                                cv2.LINE_AA)
-                                    names.append(f"{name} {surname}")
+                                    unknown_face = fr.load_image_file('../photo/image_face.jpeg')
+                                    try:
+                                        unknown_face_enc = fr.face_encodings(unknown_face)[0]
+                                    except Exception:
+                                        self.changePixmap.emit(p, names, peoples, find_faces, frame)
+
+                                    result = fr.compare_faces([known_face_enc], unknown_face_enc)
+
+                                    if result:
+                                        name = i_face[:i_face.find('.')].split('_')[0]
+                                        surname = i_face[:i_face.find('.')].split('_')[1]
+                                        cv2.putText(frame, f"{name} {surname}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
+                                                    1,
+                                                    (240, 240, 240), 2,
+                                                    cv2.LINE_AA)
+                                        names.append(f"{name} {surname}")
 
                                 if not result:
-                                    cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (200, 200, 200), 1,
+                                    cv2.putText(frame, 'unknown', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                                                (240, 240, 240), 1,
                                                 cv2.LINE_AA)
 
-                            peoples = '\n'.join(names)
-                            if len(names) < find_faces:
-                                peoples += f'неизвестные: {find_faces - len(names)}'
+                                peoples = '\n'.join(names)
+                                if len(names) < find_faces:
+                                    peoples += f'неизвестные: {find_faces - len(names)}'
 
-                        rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                        h, w, ch = rgbImage.shape
-                        bytesPerLine = ch * w
-                        convertToQtFormat = QImage(
-                            rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
-                        p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
-                        self.changePixmap.emit(p, names, peoples, find_faces, frame)
+                            rgbImage = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                            h, w, ch = rgbImage.shape
+                            bytesPerLine = ch * w
+                            convertToQtFormat = QImage(
+                                rgbImage.data, w, h, bytesPerLine, QImage.Format_RGB888)
+                            p = convertToQtFormat.scaled(700, 700, Qt.KeepAspectRatio)
+                            self.changePixmap.emit(p, names, peoples, find_faces, frame)
 
-                    elif self.k_frame == 4:
-                        self.k_frame = 0
+                        elif self.k_frame == 4:
+                            self.k_frame = 0
 
             except Exception:
-                pass
+                self.changePixmap.emit(p, names, peoples, find_faces, frame)
 
         cap.realease()
         cv2.destroyAllWindows()
